@@ -1,0 +1,23 @@
+---
+// An Astro page that uses the component. Copy it to src/pages/index.astro in
+// your Astro project, and put your menu file next to it as menu.json.
+//
+//   npm install github:counterkit/order-button      (or copy astro/ and dist/ into your project)
+//
+import OrderButton from '@counterkit/order-button/astro';
+import menu from './menu.json';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{menu.shop.name}</title>
+  </head>
+  <body>
+    <main style="max-width: 40rem; margin: 0 auto; padding: 0 16px;">
+      <h1>{menu.shop.name}</h1>
+      <OrderButton config={menu} />
+    </main>
+  </body>
+</html>

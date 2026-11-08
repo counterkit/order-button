@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/counterkit/order-button/blob/main/order-button.schema.json",
+  "title": "order-button menu config",
+  "description": "The menu, shop number and options for order-button. Keys starting with _ (like _note) are allowed anywhere and ignored.",
+  "type": "object",
+  "required": ["shop", "menu"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "shop": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "description": "Shop name. It is the second line of the order message." },
+        "whatsapp": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{7,14}$",
+          "description": "The number that receives orders: digits only, country code first, no + (India: 919800000000). Required unless ordering.previewOnly is true."
+        },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$", "default": "INR", "description": "ISO 4217 code: INR, BRL, AED, NGN, KES, ZAR, MYR, SGD, IDR, MXN, USD..." },
+        "currencySymbol": { "type": "string", "description": "Optional sign to show instead of the one Intl picks, e.g. ₹ or R$." },
+        "locale": { "type": "string", "default": "en-IN", "description": "Number format, e.g. en-IN (₹1,23,456) or pt-BR (R$ 25,90)." },
+        "timezone": { "type": "string", "description": "IANA time zone for the date in the order ID, e.g. Asia/Kolkata. Default: the visitor's time zone." }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "ordering": {
+      "type": "object",
+      "properties": {
+        "modes": {
+          "type": "array",
+          "items": { "enum": ["pickup", "delivery"] },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": ["pickup", "delivery"],
+          "description": "Which options the customer can pick. With delivery, an address is required."
+        },
+        "minOrder": { "type": "number", "minimum": 0, "default": 0, "description": "Minimum item total before the order can be sent." },
+        "deliveryFee": { "type": "number", "minimum": 0, "default": 0, "description": "Added to delivery orders and shown in the message." },
+        "deliveryNote": { "type": "string", "description": "Shown under the address field, e.g. 'Delivery within 3 km'." },
+        "orderPrefix": { "type": "string", "pattern": "^[A-Za-z0-9]{1,8}$", "description": "Start of the order ID (LLK-0811-4821). Default: initials of the shop name." },
+        "previewOnly": { "type": "boolean", "default": false, "description": "true = show the message on screen and never open WhatsApp. For demos and testing." }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "payment": {
+      "type": "object",
+      "description": "What the pay panel shows after the order is sent. order-button never takes or checks payments.",
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["upi", "pix", "link", "none"], "default": "none" },
+        "upi": {
+          "type": "object",
+          "required": ["vpa"],
+          "properties": {
+            "vpa": { "type": "string", "pattern": "^[\\w.-]+@[\\w.-]+$", "description": "UPI ID, e.g. shopname@example." },
+            "payeeName": { "type": "string" },
+            "qrImage": { "type": "string", "description": "URL or path of the shop's own UPI QR image (static, no amount)." },
+            "intent": {
+              "type": "boolean",
+              "default": false,
+              "description": "Show a 'Pay with a UPI app' (upi://pay) button on phones. Only for verified merchants: NPCI disallowed P2P intent payments from 1 April 2024."
+            }
+          },
+          "additionalProperties": false
+        },
+        "pix": {
+          "type": "object",
+          "required": ["key"],
+          "properties": {
+            "key": { "type": "string", "description": "Pix key (Brazil)." },
+            "qrImage": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "link": {
+          "type": "object",
+          "required": ["url"],
+          "properties": {
+            "url": { "type": "string", "pattern": "^https?://", "description": "Any payment link (Razorpay, Stripe, PayPal...)." },
+            "label": { "type": "string", "description": "Button text. Default: Pay online." }
+          },
+          "additionalProperties": false
+        },
+        "note": { "type": "string", "description": "Shown under the payment details, e.g. 'Pay after the shop confirms your order'." }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "menu": {
+      "type": "object",
+      "required": ["categories"],
+      "properties": {
+        "categories": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/category" } }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "labels": {
+      "type": "object",
+      "description": "Override any text, e.g. { \"checkout.send\": \"Enviar pedido\" }. The keys are listed in the README.",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "patternProperties": { "^_": {} },
+  "additionalProperties": false,
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$", "description": "Lowercase letters, digits and dashes, e.g. chicken-dum-biryani." },
+    "category": {
+      "type": "object",
+      "required": ["id", "name", "items"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "item": {
+      "type": "object",
+      "required": ["id", "name", "price"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id", "description": "Unique across the whole menu." },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "price": { "type": "number", "minimum": 0, "description": "A number without a currency sign. With variants, the price of the size picked first." },
+        "veg": { "type": "boolean", "description": "true = veg mark, false = non-veg mark, leave out for no mark." },
+        "image": { "type": "string", "description": "Optional photo URL or path." },
+        "available": { "type": "boolean", "default": true, "description": "false = shown as sold out." },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" },
+          "description": "Shown as small text. Known: bestseller, spicy, new, jain, eggless, chef-special. Others are shown as written."
+        },
+        "variants": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Sizes or portions with their own prices (Half/Full, 500 g/1 kg).",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "price"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "name": { "type": "string", "minLength": 1 },
+              "price": { "type": "number", "minimum": 0 }
+            },
+            "patternProperties": { "^_": {} },
+            "additionalProperties": false
+          }
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    }
+  }
+}

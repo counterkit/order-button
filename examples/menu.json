@@ -1,0 +1,108 @@
+{
+  "$schema": "../order-button.schema.json",
+  "_note": "Sample data. Lantern Lane Kitchen is a fictional shop. previewOnly is on, so the order message is shown on screen and never sent.",
+  "shop": {
+    "name": "Lantern Lane Kitchen",
+    "whatsapp": "910000000000",
+    "currency": "INR",
+    "currencySymbol": "₹",
+    "locale": "en-IN",
+    "timezone": "Asia/Kolkata"
+  },
+  "ordering": {
+    "modes": ["pickup", "delivery"],
+    "minOrder": 0,
+    "deliveryFee": 0,
+    "deliveryNote": "Delivery within 4 km. The shop confirms the time on WhatsApp.",
+    "previewOnly": true
+  },
+  "payment": {
+    "type": "upi",
+    "upi": { "vpa": "sampleshop@example", "payeeName": "Lantern Lane Kitchen", "qrImage": "sample-qr.svg" },
+    "note": "Pay after the shop confirms your order on WhatsApp."
+  },
+  "menu": {
+    "categories": [
+      {
+        "id": "biryani",
+        "name": "Biryani",
+        "items": [
+          {
+            "id": "chicken-dum-biryani",
+            "name": "Chicken Dum Biryani",
+            "description": "Long-grain rice and marinated chicken, sealed and slow-cooked. Comes with mirchi ka salan and raita.",
+            "price": 249,
+            "veg": false,
+            "tags": ["bestseller", "spicy"],
+            "variants": [
+              { "id": "half", "name": "Half", "price": 149 },
+              { "id": "full", "name": "Full", "price": 249 }
+            ]
+          },
+          {
+            "id": "mutton-dum-biryani",
+            "name": "Mutton Dum Biryani",
+            "description": "Tender mutton layered with saffron rice and fried onions.",
+            "price": 379,
+            "veg": false,
+            "variants": [
+              { "id": "half", "name": "Half", "price": 219 },
+              { "id": "full", "name": "Full", "price": 379 }
+            ]
+          },
+          {
+            "id": "veg-dum-biryani",
+            "name": "Veg Dum Biryani",
+            "description": "Seasonal vegetables, mint and whole spices, cooked dum style.",
+            "price": 199,
+            "veg": true,
+            "variants": [
+              { "id": "half", "name": "Half", "price": 119 },
+              { "id": "full", "name": "Full", "price": 199 }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "starters",
+        "name": "Starters",
+        "items": [
+          { "id": "chicken-65", "name": "Chicken 65", "description": "Crisp fried chicken tossed with curry leaves and green chilli.", "price": 229, "veg": false, "tags": ["spicy"] },
+          { "id": "paneer-tikka", "name": "Paneer Tikka", "description": "Cottage cheese cubes, charred in the tandoor with peppers and onion.", "price": 219, "veg": true },
+          { "id": "gobi-manchurian", "name": "Gobi Manchurian", "description": "Cauliflower in a sticky soy, garlic and spring onion sauce.", "price": 169, "veg": true },
+          { "id": "apollo-fish", "name": "Apollo Fish", "description": "Boneless fish fried with yogurt, chilli and curry leaves.", "price": 269, "veg": false, "tags": ["spicy"], "available": false }
+        ]
+      },
+      {
+        "id": "curries-breads",
+        "name": "Curries and breads",
+        "items": [
+          {
+            "id": "butter-chicken",
+            "name": "Butter Chicken",
+            "description": "Tandoori chicken in a mild tomato and butter gravy.",
+            "price": 299,
+            "veg": false,
+            "variants": [
+              { "id": "half", "name": "Half", "price": 179 },
+              { "id": "full", "name": "Full", "price": 299 }
+            ]
+          },
+          { "id": "dal-tadka", "name": "Dal Tadka", "description": "Yellow lentils finished with ghee, garlic and cumin.", "price": 149, "veg": true, "tags": ["jain"] },
+          { "id": "butter-naan", "name": "Butter Naan", "price": 45, "veg": true },
+          { "id": "rumali-roti", "name": "Rumali Roti", "price": 25, "veg": true }
+        ]
+      },
+      {
+        "id": "sweets-drinks",
+        "name": "Sweets and drinks",
+        "items": [
+          { "id": "double-ka-meetha", "name": "Double Ka Meetha", "description": "Bread pudding soaked in saffron milk, topped with nuts.", "price": 89, "veg": true, "tags": ["bestseller"] },
+          { "id": "qubani-ka-meetha", "name": "Qubani Ka Meetha", "description": "Stewed apricots with fresh cream.", "price": 119, "veg": true },
+          { "id": "irani-chai", "name": "Irani Chai", "price": 25, "veg": true },
+          { "id": "fresh-lime-soda", "name": "Fresh Lime Soda", "price": 59, "veg": true, "tags": ["new"] }
+        ]
+      }
+    ]
+  }
+}

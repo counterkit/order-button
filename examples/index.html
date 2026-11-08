@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>order-button example: Lantern Lane Kitchen (fictional)</title>
+    <meta name="description" content="A runnable example of order-button: a no-backend cart that turns an order into a ready-made WhatsApp message. Open this file straight from disk." />
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../dist/order-button.css" />
+    <style>
+      :root {
+        --page: #f6f4ef;
+        --card: #fffdf8;
+        --ink: #1d1e2c;
+        --muted: #5d5f70;
+        --rule: #e3dfd4;
+        --carbon: #24248f;
+        --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+        --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
+
+        /* order-button theme: plain CSS variables */
+        --ob-paper: var(--card);
+        --ob-ink: var(--ink);
+        --ob-muted: var(--muted);
+        --ob-line: var(--rule);
+        --ob-soft: #f1eee6;
+        --ob-accent: var(--carbon);
+        --ob-font-display: var(--serif);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font: 16px/1.5 var(--sans);
+      }
+      a {
+        color: var(--carbon);
+      }
+      .wrap {
+        width: min(40rem, 100%);
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+
+      /* "this is a demo" strip */
+      .demo {
+        background: var(--ink);
+        color: #eceaf6;
+        font-size: 0.9rem;
+      }
+      .demo .wrap {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+      .demo p {
+        margin: 0;
+      }
+      .demo strong {
+        color: #fff;
+      }
+      .demo a {
+        color: #c9cbff;
+      }
+      .demo details {
+        margin-top: 6px;
+      }
+      .demo summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: #fff;
+        padding: 6px 0;
+      }
+      .demo form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: end;
+        margin: 6px 0 4px;
+      }
+      .demo label {
+        display: grid;
+        gap: 4px;
+        flex: 1 1 14rem;
+      }
+      .demo input {
+        font: inherit;
+        min-height: 44px;
+        padding: 8px 12px;
+        border: 1px solid #5b5d78;
+        border-radius: 10px;
+        background: #2a2b3d;
+        color: #fff;
+      }
+      .demo button {
+        font: inherit;
+        font-weight: 700;
+        min-height: 44px;
+        padding: 8px 16px;
+        border: 0;
+        border-radius: 10px;
+        background: #ffc21a;
+        color: #1d1e2c;
+        cursor: pointer;
+      }
+      .demo button.quiet {
+        background: transparent;
+        color: #fff;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .demo .status {
+        margin-top: 4px;
+        font-weight: 600;
+      }
+      .demo .status[data-live] {
+        color: #ffc21a;
+      }
+      .demo :focus-visible {
+        outline: 3px solid #ffc21a;
+        outline-offset: 2px;
+      }
+
+      /* shop header */
+      .shop {
+        padding-top: 28px;
+        padding-bottom: 18px;
+      }
+      .shop__label {
+        margin: 0 0 6px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .shop h1 {
+        margin: 0;
+        font-family: var(--serif);
+        font-size: clamp(2.1rem, 9vw, 2.9rem);
+        line-height: 1;
+        letter-spacing: -0.01em;
+      }
+      .shop__tagline {
+        margin: 10px 0 0;
+        font-size: 1.05rem;
+      }
+      .shop__facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        margin: 14px 0 0;
+        padding: 0;
+        list-style: none;
+        font-size: 0.875rem;
+        color: var(--muted);
+      }
+      .shop__facts li {
+        padding: 4px 10px;
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        background: var(--card);
+      }
+
+      /* category chips */
+      .cats {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: color-mix(in srgb, var(--page) 92%, transparent);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid var(--rule);
+      }
+      .cats ul {
+        display: flex;
+        gap: 8px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        width: min(40rem, 100%);
+        list-style: none;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .cats a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 0 14px;
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        background: var(--card);
+        color: var(--ink);
+        font-size: 0.925rem;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .cats a:focus-visible {
+        outline: 3px solid var(--carbon);
+        outline-offset: 2px;
+      }
+
+      /* menu card */
+      main {
+        padding: 22px 0 8px;
+      }
+      #menu {
+        padding: 6px 18px 4px;
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        background: var(--card);
+      }
+      #menu .ob-cat {
+        padding-top: 16px;
+      }
+      #menu .ob-cat__title {
+        font-size: 1.5rem;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--ink);
+      }
+      #menu .ob-item:last-child {
+        border-bottom: 0;
+      }
+
+      /* how it works */
+      .how {
+        margin: 28px 0 0;
+        padding: 18px;
+        border: 1px dashed #c9c4b6;
+        border-radius: 18px;
+      }
+      .how h2 {
+        margin: 0 0 6px;
+        font-family: var(--serif);
+        font-size: 1.3rem;
+      }
+      .how p {
+        margin: 8px 0 0;
+      }
+      .how pre {
+        margin: 12px 0 0;
+        padding: 12px 14px;
+        overflow-x: auto;
+        border-radius: 12px;
+        background: #1d1e2c;
+        color: #eceaf6;
+        font: 0.8rem/1.55 ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace;
+      }
+      footer {
+        padding: 22px 0 28px;
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+      footer p {
+        margin: 6px 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo">
+      <div class="wrap">
+        <p><strong>order-button example.</strong> The shop is fictional. Orders show on screen and are not sent anywhere.</p>
+        <details>
+          <summary>Send a test order to your own WhatsApp</summary>
+          <form id="live-form" novalidate>
+            <label>
+              <span>Your number with country code, digits only</span>
+              <input id="live-number" type="tel" inputmode="numeric" autocomplete="tel" placeholder="919800000000" maxlength="18" />
+            </label>
+            <button type="submit">Use my number</button>
+            <button type="button" class="quiet" id="live-off" hidden>Back to preview</button>
+          </form>
+          <p class="status" id="live-status" role="status">Preview mode: the message is shown here instead of opening WhatsApp.</p>
+        </details>
+      </div>
+    </div>
+
+    <header class="shop wrap">
+      <p class="shop__label">Fictional demo shop</p>
+      <h1>Lantern Lane Kitchen</h1>
+      <p class="shop__tagline">Dum biryani and Hyderabadi curries, cooked to order.</p>
+      <ul class="shop__facts">
+        <li>Pickup or delivery</li>
+        <li>Delivery within 4 km</li>
+        <li>Prices in ₹</li>
+      </ul>
+    </header>
+
+    <nav class="cats" aria-label="Menu sections"><ul id="cats"></ul></nav>
+
+    <main class="wrap">
+      <!-- order-button renders the menu here -->
+      <div id="menu"></div>
+
+      <section class="how" aria-labelledby="how-title">
+        <h2 id="how-title">How this page works</h2>
+        <p>There is no server. The menu is a JSON block on this page. When you press send, the order becomes a ready-made chat message on a <code>wa.me</code> link to the shop's number.</p>
+        <pre><code>&lt;link rel="stylesheet" href="order-button.css"&gt;
+&lt;div id="menu"&gt;&lt;/div&gt;
+&lt;script src="order-button.iife.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  OrderButton.init(menuConfig, { menu: '#menu' });
+&lt;/script&gt;</code></pre>
+        <p>See the <a href="../README.md">README</a> for the menu format, the data attributes for menus you already have, and the Astro component.</p>
+      </section>
+    </main>
+
+    <footer class="wrap">
+      <p>Built with order-button, MIT licensed. Lantern Lane Kitchen is a made-up shop for this example.</p>
+      <p>order-button is not made by or affiliated with WhatsApp or Meta. The name is used only to say where orders arrive.</p>
+    </footer>
+
+    <!-- The same config as examples/menu.json (a test keeps them identical). -->
+    <script type="application/json" id="menu-data">
+      {
+        "_note": "Sample data. Lantern Lane Kitchen is a fictional shop. previewOnly is on, so the order message is shown on screen and never sent.",
+        "shop": {
+          "name": "Lantern Lane Kitchen",
+          "whatsapp": "910000000000",
+          "currency": "INR",
+          "currencySymbol": "₹",
+          "locale": "en-IN",
+          "timezone": "Asia/Kolkata"
+        },
+        "ordering": {
+          "modes": ["pickup", "delivery"],
+          "minOrder": 0,
+          "deliveryFee": 0,
+          "deliveryNote": "Delivery within 4 km. The shop confirms the time on WhatsApp.",
+          "previewOnly": true
+        },
+        "payment": {
+          "type": "upi",
+          "upi": { "vpa": "sampleshop@example", "payeeName": "Lantern Lane Kitchen", "qrImage": "sample-qr.svg" },
+          "note": "Pay after the shop confirms your order on WhatsApp."
+        },
+        "menu": {
+          "categories": [
+            {
+              "id": "biryani",
+              "name": "Biryani",
+              "items": [
+                {
+                  "id": "chicken-dum-biryani",
+                  "name": "Chicken Dum Biryani",
+                  "description": "Long-grain rice and marinated chicken, sealed and slow-cooked. Comes with mirchi ka salan and raita.",
+                  "price": 249,
+                  "veg": false,
+                  "tags": ["bestseller", "spicy"],
+                  "variants": [
+                    { "id": "half", "name": "Half", "price": 149 },
+                    { "id": "full", "name": "Full", "price": 249 }
+                  ]
+                },
+                {
+                  "id": "mutton-dum-biryani",
+                  "name": "Mutton Dum Biryani",
+                  "description": "Tender mutton layered with saffron rice and fried onions.",
+                  "price": 379,
+                  "veg": false,
+                  "variants": [
+                    { "id": "half", "name": "Half", "price": 219 },
+                    { "id": "full", "name": "Full", "price": 379 }
+                  ]
+                },
+                {
+                  "id": "veg-dum-biryani",
+                  "name": "Veg Dum Biryani",
+                  "description": "Seasonal vegetables, mint and whole spices, cooked dum style.",
+                  "price": 199,
+                  "veg": true,
+                  "variants": [
+                    { "id": "half", "name": "Half", "price": 119 },
+                    { "id": "full", "name": "Full", "price": 199 }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "starters",
+              "name": "Starters",
+              "items": [
+                { "id": "chicken-65", "name": "Chicken 65", "description": "Crisp fried chicken tossed with curry leaves and green chilli.", "price": 229, "veg": false, "tags": ["spicy"] },
+                { "id": "paneer-tikka", "name": "Paneer Tikka", "description": "Cottage cheese cubes, charred in the tandoor with peppers and onion.", "price": 219, "veg": true },
+                { "id": "gobi-manchurian", "name": "Gobi Manchurian", "description": "Cauliflower in a sticky soy, garlic and spring onion sauce.", "price": 169, "veg": true },
+                { "id": "apollo-fish", "name": "Apollo Fish", "description": "Boneless fish fried with yogurt, chilli and curry leaves.", "price": 269, "veg": false, "tags": ["spicy"], "available": false }
+              ]
+            },
+            {
+              "id": "curries-breads",
+              "name": "Curries and breads",
+              "items": [
+                {
+                  "id": "butter-chicken",
+                  "name": "Butter Chicken",
+                  "description": "Tandoori chicken in a mild tomato and butter gravy.",
+                  "price": 299,
+                  "veg": false,
+                  "variants": [
+                    { "id": "half", "name": "Half", "price": 179 },
+                    { "id": "full", "name": "Full", "price": 299 }
+                  ]
+                },
+                { "id": "dal-tadka", "name": "Dal Tadka", "description": "Yellow lentils finished with ghee, garlic and cumin.", "price": 149, "veg": true, "tags": ["jain"] },
+                { "id": "butter-naan", "name": "Butter Naan", "price": 45, "veg": true },
+                { "id": "rumali-roti", "name": "Rumali Roti", "price": 25, "veg": true }
+              ]
+            },
+            {
+              "id": "sweets-drinks",
+              "name": "Sweets and drinks",
+              "items": [
+                { "id": "double-ka-meetha", "name": "Double Ka Meetha", "description": "Bread pudding soaked in saffron milk, topped with nuts.", "price": 89, "veg": true, "tags": ["bestseller"] },
+                { "id": "qubani-ka-meetha", "name": "Qubani Ka Meetha", "description": "Stewed apricots with fresh cream.", "price": 119, "veg": true },
+                { "id": "irani-chai", "name": "Irani Chai", "price": 25, "veg": true },
+                { "id": "fresh-lime-soda", "name": "Fresh Lime Soda", "price": 59, "veg": true, "tags": ["new"] }
+              ]
+            }
+          ]
+        }
+      }
+    </script>
+
+    <!-- A classic script, so this page works when opened from disk (file://). -->
+    <script src="../dist/order-button.iife.js"></script>
+    <script>
+      const config = JSON.parse(document.getElementById('menu-data').textContent);
+      const ob = OrderButton.init(config, { menu: '#menu' });
+
+      // Category chips (page code, not part of order-button).
+      document.getElementById('cats').innerHTML = config.menu.categories
+        .map((c) => `<li><a href="#ob-cat-${OrderButton.slug(c.id)}">${OrderButton.esc(c.name)}</a></li>`)
+        .join('');
+
+      // "Send a test order to your own WhatsApp": switch preview mode off.
+      const form = document.getElementById('live-form');
+      const input = document.getElementById('live-number');
+      const status = document.getElementById('live-status');
+      const off = document.getElementById('live-off');
+      const preview = 'Preview mode: the message is shown here instead of opening WhatsApp.';
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const digits = input.value.replace(/\D/g, '');
+        if (digits.length < 8 || digits.length > 15 || digits.startsWith('0')) {
+          status.textContent = 'Enter the number with its country code, like 919800000000 (India) or 5511987654321 (Brazil).';
+          status.removeAttribute('data-live');
+          input.focus();
+          return;
+        }
+        ob.set({ whatsapp: digits, previewOnly: false });
+        status.textContent = `Live mode: orders from this page now open WhatsApp addressed to +${digits}. Nothing is sent until you press send there.`;
+        status.setAttribute('data-live', '');
+        off.hidden = false;
+      });
+      off.addEventListener('click', () => {
+        ob.set({ whatsapp: config.shop.whatsapp, previewOnly: true });
+        status.textContent = preview;
+        status.removeAttribute('data-live');
+        off.hidden = true;
+      });
+    </script>
+  </body>
+</html>

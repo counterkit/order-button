@@ -1,0 +1,48 @@
+---
+/**
+ * <OrderButton config={menu} />
+ *
+ * Renders the menu as plain HTML at build time (search engines and slow phones
+ * see it before any JavaScript runs), then starts order-button in the browser:
+ * cart, floating "View order" bar, order sheet and pay panel.
+ *
+ * Props
+ *   config      the menu config (import it from a .json file)
+ *   renderMenu  default true; false when your page already has data-ob-* markup
+ *   bar         default true; false hides the floating bar (use your own data-ob-open button)
+ *   heading     heading level for category titles, default 2 (item names use the next level)
+ *   class       extra class on the menu wrapper
+ *
+ * Use one <OrderButton> per page.
+ * MIT License. Copyright (c) 2026 Halvex Labs. https://github.com/counterkit/order-button
+ */
+import { menuHTML } from '../dist/order-button.js';
+import '../dist/order-button.css';
+
+interface Props {
+  config: Record<string, any>;
+  renderMenu?: boolean;
+  bar?: boolean;
+  heading?: number;
+  class?: string;
+}
+
+const { config, renderMenu = true, bar = true, heading = 2, class: className } = Astro.props;
+const html = renderMenu ? menuHTML(config, { heading }) : '';
+// Inside a <script> block, "<" is escaped so the JSON can never close the tag early.
+const data = JSON.stringify({ config, bar, heading }).replace(/</g, '\\u003c');
+---
+
+{renderMenu && <div class:list={['ob-menu-slot', className]} set:html={html} />}
+<script is:inline type="application/json" data-ob-astro set:html={data} />
+
+<script>
+  import { init } from '../dist/order-button.js';
+
+  for (const el of document.querySelectorAll('script[data-ob-astro]')) {
+    if (el.hasAttribute('data-ob-ready')) continue;
+    el.setAttribute('data-ob-ready', '');
+    const { config, bar, heading } = JSON.parse(el.textContent || '{}');
+    init(config, { menu: false, bar, heading });
+  }
+</script>

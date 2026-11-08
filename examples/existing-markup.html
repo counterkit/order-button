@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>order-button example: your own menu markup</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../dist/order-button.css" />
+    <style>
+      /* This page stands in for "a site you already have". Its markup and styles are its own;
+         order-button only reads the data-ob-* attributes. */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #fbf7f2;
+        color: #2b2420;
+        font: 16px/1.5 Georgia, 'Times New Roman', serif;
+        --ob-accent: #7a3e1d;
+        --ob-ink: #2b2420;
+        --ob-paper: #fffdfa;
+      }
+      .wrap {
+        width: min(42rem, 100%);
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+      .note {
+        margin: 0;
+        padding: 10px 16px;
+        background: #2b2420;
+        color: #f5ece4;
+        font: 0.9rem/1.45 system-ui, sans-serif;
+        text-align: center;
+      }
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        background: #fbf7f2;
+        border-bottom: 1px solid #e6dcd1;
+      }
+      .top strong {
+        font-size: 1.2rem;
+      }
+      .cart-btn {
+        min-height: 44px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 8px;
+        background: #7a3e1d;
+        color: #fff;
+        font: 600 0.95rem system-ui, sans-serif;
+        cursor: pointer;
+      }
+      h1 {
+        margin: 28px 0 4px;
+        font-size: 2rem;
+      }
+      h2 {
+        margin: 32px 0 10px;
+        font-size: 1.35rem;
+        border-bottom: 1px solid #e6dcd1;
+        padding-bottom: 4px;
+      }
+      .special {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 14px;
+        margin: 16px 0 0;
+        padding: 12px 14px;
+        border: 1px dashed #b98b6b;
+        border-radius: 10px;
+      }
+      .special button,
+      .cake button,
+      .bread button {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0 14px;
+        border: 1px solid #7a3e1d;
+        border-radius: 8px;
+        background: #fffdfa;
+        color: #7a3e1d;
+        font: 600 0.95rem system-ui, sans-serif;
+        cursor: pointer;
+      }
+      .special button[data-ob-in-cart]::after {
+        content: ' (added)';
+      }
+      .cakes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+        gap: 14px;
+      }
+      .cake {
+        padding: 14px;
+        border: 1px solid #e6dcd1;
+        border-radius: 12px;
+        background: #fffdfa;
+      }
+      .cake[data-ob-in-cart] {
+        border-color: #7a3e1d;
+      }
+      .cake h3 {
+        margin: 0;
+      }
+      .cake p {
+        margin: 4px 0 0;
+      }
+      .cake fieldset {
+        display: flex;
+        gap: 14px;
+        margin: 10px 0;
+        padding: 0;
+        border: 0;
+        font-family: system-ui, sans-serif;
+      }
+      .cake legend {
+        float: left;
+        margin-right: 6px;
+        font-weight: 600;
+      }
+      .cake label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 44px;
+      }
+      .cake .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .price {
+        font: 700 1.1rem system-ui, sans-serif;
+      }
+      [data-ob-stepper] {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: system-ui, sans-serif;
+      }
+      [data-ob-stepper][hidden] {
+        display: none;
+      }
+      table.bread {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: system-ui, sans-serif;
+      }
+      .bread td {
+        padding: 8px 4px;
+        border-bottom: 1px solid #e6dcd1;
+      }
+      .bread td:nth-child(2) {
+        text-align: right;
+        white-space: nowrap;
+      }
+      .bread td:last-child {
+        width: 1%;
+        white-space: nowrap;
+        text-align: right;
+      }
+      .bread [data-ob-qty] {
+        display: inline-block;
+        min-width: 1.5em;
+        text-align: center;
+        font-weight: 700;
+      }
+      footer {
+        margin: 36px 0 28px;
+        font: 0.875rem/1.5 system-ui, sans-serif;
+        color: #6b5b50;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="note">order-button example: a hand-written menu wired with <code>data-ob-*</code> attributes. Second Proof Bakery is a fictional shop; orders are only shown on screen.</p>
+
+    <header class="top">
+      <strong>Second Proof Bakery</strong>
+      <!-- Any element with data-ob-open opens the order. data-ob-count / data-ob-total update live. -->
+      <button type="button" class="cart-btn" data-ob-open>Order: <span data-ob-count>0</span> · <span data-ob-total>₹0</span></button>
+    </header>
+
+    <main class="wrap">
+      <h1>Bakes for today</h1>
+      <p>Eggless cakes, fresh bread and tea-time bakes. Cakes need 4 hours' notice.</p>
+
+      <!-- A button outside any item: data-ob-add holds the item id. -->
+      <p class="special">
+        <span>Today only: plum cake slice, ₹60</span>
+        <button type="button" data-ob-add="plum-cake" aria-label="Add one plum cake slice">Add one</button>
+      </p>
+
+      <h2>Cakes</h2>
+      <div class="cakes">
+        <!-- An item block: data-ob-item holds the id; the controls inside need no value. -->
+        <article class="cake" data-ob-item="chocolate-truffle">
+          <h3>Chocolate truffle cake</h3>
+          <p>Dark chocolate ganache, eggless.</p>
+          <fieldset>
+            <legend>Size</legend>
+            <label><input type="radio" name="truffle-size" value="500g" data-ob-variant checked /> 500 g</label>
+            <label><input type="radio" name="truffle-size" value="1kg" data-ob-variant /> 1 kg</label>
+          </fieldset>
+          <div class="row">
+            <span class="price" data-ob-price>₹450</span>
+            <button type="button" data-ob-add aria-label="Add chocolate truffle cake">Add to order</button>
+            <span data-ob-stepper hidden>
+              <button type="button" data-ob-dec aria-label="One less chocolate truffle cake">−</button>
+              <span data-ob-qty>0</span>
+              <button type="button" data-ob-inc aria-label="One more chocolate truffle cake">+</button>
+            </span>
+          </div>
+        </article>
+
+        <article class="cake" data-ob-item="pineapple-cake">
+          <h3>Pineapple cake</h3>
+          <p>Light sponge, fresh cream and pineapple, eggless.</p>
+          <fieldset>
+            <legend>Size</legend>
+            <label><input type="radio" name="pineapple-size" value="500g" data-ob-variant checked /> 500 g</label>
+            <label><input type="radio" name="pineapple-size" value="1kg" data-ob-variant /> 1 kg</label>
+          </fieldset>
+          <div class="row">
+            <span class="price" data-ob-price>₹380</span>
+            <button type="button" data-ob-add aria-label="Add pineapple cake">Add to order</button>
+            <span data-ob-stepper hidden>
+              <button type="button" data-ob-dec aria-label="One less pineapple cake">−</button>
+              <span data-ob-qty>0</span>
+              <button type="button" data-ob-inc aria-label="One more pineapple cake">+</button>
+            </span>
+          </div>
+        </article>
+      </div>
+
+      <h2>Bread and tea-time</h2>
+      <table class="bread">
+        <tbody>
+          <tr data-ob-item="sourdough">
+            <td>Sourdough loaf</td>
+            <td>₹180</td>
+            <td><button type="button" data-ob-dec aria-label="One less sourdough loaf">−</button> <span data-ob-qty>0</span> <button type="button" data-ob-inc aria-label="One more sourdough loaf">+</button></td>
+          </tr>
+          <tr data-ob-item="milk-bread">
+            <td>Milk bread</td>
+            <td>₹55</td>
+            <td><button type="button" data-ob-dec aria-label="One less milk bread">−</button> <span data-ob-qty>0</span> <button type="button" data-ob-inc aria-label="One more milk bread">+</button></td>
+          </tr>
+          <tr data-ob-item="osmania-biscuits">
+            <td>Osmania biscuits, 250 g</td>
+            <td>₹120</td>
+            <td><button type="button" data-ob-dec aria-label="One less pack of Osmania biscuits">−</button> <span data-ob-qty>0</span> <button type="button" data-ob-inc aria-label="One more pack of Osmania biscuits">+</button></td>
+          </tr>
+          <tr data-ob-item="veg-puff">
+            <td>Veg puff</td>
+            <td>₹30</td>
+            <td><button type="button" data-ob-dec aria-label="One less veg puff">−</button> <span data-ob-qty>0</span> <button type="button" data-ob-inc aria-label="One more veg puff">+</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <footer>
+        <p>Minimum order ₹150. Delivery within 5 km costs ₹40. Built with order-button (MIT).</p>
+      </footer>
+    </main>
+
+    <!-- The config. data-bar="false" because this page has its own cart button in the header. -->
+    <script type="application/json" data-order-button data-bar="false">
+      {
+        "shop": { "name": "Second Proof Bakery", "whatsapp": "910000000000", "currency": "INR", "currencySymbol": "₹", "locale": "en-IN", "timezone": "Asia/Kolkata" },
+        "ordering": {
+          "modes": ["pickup", "delivery"],
+          "minOrder": 150,
+          "deliveryFee": 40,
+          "deliveryNote": "Cakes need 4 hours' notice. Delivery within 5 km.",
+          "orderPrefix": "SP",
+          "previewOnly": true
+        },
+        "payment": { "type": "link", "link": { "url": "https://example.com/pay", "label": "Pay online" }, "note": "Cake orders are confirmed once paid." },
+        "menu": {
+          "categories": [
+            {
+              "id": "cakes",
+              "name": "Cakes",
+              "items": [
+                { "id": "chocolate-truffle", "name": "Chocolate truffle cake", "price": 450, "variants": [ { "id": "500g", "name": "500 g", "price": 450 }, { "id": "1kg", "name": "1 kg", "price": 850 } ] },
+                { "id": "pineapple-cake", "name": "Pineapple cake", "price": 380, "variants": [ { "id": "500g", "name": "500 g", "price": 380 }, { "id": "1kg", "name": "1 kg", "price": 720 } ] },
+                { "id": "plum-cake", "name": "Plum cake slice", "price": 60 }
+              ]
+            },
+            {
+              "id": "bread",
+              "name": "Bread and tea-time",
+              "items": [
+                { "id": "sourdough", "name": "Sourdough loaf", "price": 180 },
+                { "id": "milk-bread", "name": "Milk bread", "price": 55 },
+                { "id": "osmania-biscuits", "name": "Osmania biscuits, 250 g", "price": 120 },
+                { "id": "veg-puff", "name": "Veg puff", "price": 30 }
+              ]
+            }
+          ]
+        }
+      }
+    </script>
+    <!-- Classic script: starts itself from the JSON block above. Works from file://. -->
+    <script src="../dist/order-button.iife.js"></script>
+  </body>
+</html>

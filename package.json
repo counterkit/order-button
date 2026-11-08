@@ -1,0 +1,77 @@
+{
+  "name": "@counterkit/order-button",
+  "version": "1.0.0",
+  "description": "A no-backend cart and 'send order on WhatsApp' button for any static site. One dependency-free JS file.",
+  "license": "MIT",
+  "author": "Halvex Labs <hello@halvexlabs.com> (https://halvexlabs.com)",
+  "homepage": "https://github.com/counterkit/order-button#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/counterkit/order-button.git"
+  },
+  "bugs": {
+    "url": "https://github.com/counterkit/order-button/issues",
+    "email": "hello@halvexlabs.com"
+  },
+  "type": "module",
+  "main": "./dist/order-button.js",
+  "module": "./dist/order-button.js",
+  "jsdelivr": "./dist/order-button.iife.js",
+  "unpkg": "./dist/order-button.iife.js",
+  "exports": {
+    ".": "./dist/order-button.js",
+    "./iife": "./dist/order-button.iife.js",
+    "./css": "./dist/order-button.css",
+    "./order-button.css": "./dist/order-button.css",
+    "./astro": "./astro/OrderButton.astro",
+    "./schema": "./order-button.schema.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "astro",
+    "src",
+    "order-button.schema.json"
+  ],
+  "sideEffects": [
+    "*.css",
+    "./dist/order-button.iife.js"
+  ],
+  "keywords": [
+    "cart",
+    "order",
+    "ordering",
+    "whatsapp",
+    "wa.me",
+    "static-site",
+    "no-backend",
+    "restaurant",
+    "menu",
+    "upi",
+    "pix",
+    "astro-component",
+    "vanilla-js"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "check": "node .claude/skills/menu-from-photo/check-menu.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "gif": "node scripts/record-demo.mjs"
+  },
+  "peerDependencies": {
+    "astro": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "astro": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "playwright-core": "1.65.0"
+  }
+}
