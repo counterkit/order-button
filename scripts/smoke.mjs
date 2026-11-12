@@ -161,7 +161,12 @@ try {
     ok(await pay.isVisible(), 'Continue to payment opens the pay panel');
     const payText = await pay.textContent();
     ok(payText.includes('₹387') && payText.includes('sampleshop@example'), 'pay panel shows the exact amount and the UPI ID');
-    ok(await pay.locator('.ob-qr img').evaluate((img) => img.complete && img.naturalWidth > 0), 'the QR image loads from disk');
+    // The QR <img> starts loading when the pay panel opens, so wait for it (up to 5 s) instead of checking at once.
+    ok(await pay.locator('.ob-qr img').evaluate((img) => (img.complete && img.naturalWidth > 0) || new Promise((resolve) => {
+      img.addEventListener('load', () => resolve(img.naturalWidth > 0), { once: true });
+      img.addEventListener('error', () => resolve(false), { once: true });
+      setTimeout(() => resolve(img.complete && img.naturalWidth > 0), 5000);
+    })), 'the QR image loads from disk');
     ok(await pay.locator('a', { hasText: 'Open WhatsApp again' }).isHidden(), 'no "Open WhatsApp again" in preview mode');
     await shot(page, '5-pay');
 
